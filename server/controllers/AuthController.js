@@ -10,7 +10,7 @@ module.exports.Signup = async (req, res, next) => {
     }
     const existingUser = await User.findOne({ email })
     if (existingUser) res.json({ message: "User already exists"})
-    const user = User.create(req.body)
+    const user = User.create(email, password, username, createdAt)
     const token = createSecretToken(user._id)
     res.cookie("token", token, {
       withCredentials: true,
@@ -36,6 +36,7 @@ module.exports.Login = async (req, res, next) => {
     const user = await User.findOne({ email })
     if (!user) res.json({ message: "incorrect password or email" })
     const auth = await bcrypt.compare(password, user.password)
+    console.log(auth)
     if (!auth) return res.json({ message: "incorrect password or email" })
     const token = createSecretToken(user._id)
     res.cookie("token", token, {
